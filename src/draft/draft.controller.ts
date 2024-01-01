@@ -29,7 +29,7 @@ export class DraftController {
       description: quiz.draft.description,
       num_play_times: quiz.num_play_times,
       is_public: quiz.draft.is_public,
-      created_at: quiz.created_at.toISOString(),
+      created_at: quiz.created_at.getTime(),
       questions: quiz.draft.questions.map((question) => ({
         index: question.index,
         question: question.question,

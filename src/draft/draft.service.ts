@@ -18,7 +18,7 @@ export class DraftService {
         $not: { draft: null },
       },
       {
-        populate: ['draft', 'draft.questions', 'draft.questions.answers'],
+        populate: true,
       },
     );
   }
