@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Quiz } from 'src/entities/quiz.entity';
 import { QuizDto } from './dtos/quiz.dto';
@@ -72,11 +72,16 @@ export class DraftService {
   }
 
   async updateDraft(dto: QuizDto) {
-    const quiz = await this.em.findOneOrFail(
+    const quiz = await this.em.findOne(
       Quiz,
       { quiz_id: dto.quiz_id },
       { populate: true },
     );
+
+    if (quiz === null) {
+      throw new HttpException('Quiz not found', HttpStatus.BAD_REQUEST);
+    }
+
     quiz.draft = quiz.draft ?? new Version();
 
     const draft = quiz.draft;
@@ -116,5 +121,50 @@ export class DraftService {
 
     await this.em.persistAndFlush(quiz);
     return quiz;
+  }
+
+  async deleteDraft(quiz_id: string) {
+    const quiz = await this.em.findOneOrFail(
+      Quiz,
+      { quiz_id },
+      { populate: true },
+    );
+
+    if (quiz.draft === null) {
+      return;
+    }
+
+    this.em.remove(quiz.draft);
+
+    quiz.draft = null;
+
+    if (quiz.published === null) {
+      this.em.remove(quiz);
+    }
+
+    await this.em.flush();
+  }
+
+  async publishDraft(quiz_id: string) {
+    const quiz = await this.em.findOneOrFail(
+      Quiz,
+      { quiz_id },
+      { populate: true },
+    );
+
+    if (quiz.draft === null) {
+      return;
+    }
+
+    if (quiz.published !== null) {
+      await this.em.nativeDelete(Version, {
+        version_id: quiz.published.version_id,
+      });
+    }
+
+    quiz.published = quiz.draft;
+    quiz.draft = null;
+
+    await this.em.persistAndFlush(quiz);
   }
 }

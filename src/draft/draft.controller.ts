@@ -6,6 +6,8 @@ import {
   HttpStatus,
   Post,
   Body,
+  Delete,
+  Put,
 } from '@nestjs/common';
 import { DraftService } from './draft.service';
 import { QuizDto } from './dtos/quiz.dto';
@@ -44,7 +46,7 @@ export class DraftController {
     };
   }
 
-  @Post()
+  @Put()
   async updateQuiz(@Body() dto: QuizDto): Promise<{
     quiz_id: string;
   }> {
@@ -55,5 +57,15 @@ export class DraftController {
 
     const quiz = await this.draftService.updateDraft(dto);
     return { quiz_id: quiz.quiz_id };
+  }
+
+  @Delete(':quiz_id')
+  async deleteQuiz(@Param('quiz_id') quiz_id: string): Promise<void> {
+    await this.draftService.deleteDraft(quiz_id);
+  }
+
+  @Post(':quiz_id/publish')
+  async publishQuiz(@Param('quiz_id') quiz_id: string): Promise<void> {
+    await this.draftService.publishDraft(quiz_id);
   }
 }
