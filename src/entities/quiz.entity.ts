@@ -17,8 +17,8 @@ export class Quiz {
   num_play_times: number;
 
   @OneToOne({ entity: () => Version, inversedBy: 'quiz', nullable: true })
-  draft: Version;
+  draft?: Version;
 
   @OneToOne({ entity: () => Version, inversedBy: 'quiz', nullable: true })
-  published: Version;
+  published?: Version;
 }

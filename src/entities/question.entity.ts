@@ -1,4 +1,5 @@
 import {
+  Collection,
   Entity,
   ManyToOne,
   OneToMany,
@@ -6,6 +7,7 @@ import {
   Property,
   Unique,
 } from '@mikro-orm/core';
+import { v4 as uuidv4 } from 'uuid';
 import { Version } from './version.entity';
 import { Answer } from './answer.entity';
 
@@ -19,7 +21,7 @@ export class Question {
   version: Version;
 
   @PrimaryKey({ type: 'uuid' })
-  question_id: string;
+  question_id: string = uuidv4();
 
   @Property()
   index: number;
@@ -34,5 +36,5 @@ export class Question {
   allow_powerups: boolean;
 
   @OneToMany(() => Answer, (answer) => answer.question)
-  answers: Answer[];
+  answers = new Collection<Answer>(this);
 }

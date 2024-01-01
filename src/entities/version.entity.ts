@@ -1,4 +1,5 @@
 import {
+  Collection,
   Entity,
   OneToMany,
   OneToOne,
@@ -27,5 +28,5 @@ export class Version {
   is_public: boolean;
 
   @OneToMany({ entity: () => Question, mappedBy: 'version' })
-  questions: Question[];
+  questions = new Collection<Question>(this);
 }
