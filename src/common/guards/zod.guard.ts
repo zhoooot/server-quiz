@@ -1,8 +1,9 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { z } from 'zod';
 
 @Injectable()
 export class ZodGuard implements CanActivate {
-  constructor(private readonly schema: any) {}
+  constructor(private readonly schema: z.ZodType) {}
 
   canActivate(context: ExecutionContext): boolean {
     try {
