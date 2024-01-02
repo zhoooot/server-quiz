@@ -1,5 +1,5 @@
 import { EntityManager, wrap } from '@mikro-orm/core';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Quiz } from 'src/entities/quiz.entity';
 import { QuizReturnDto } from './dtos/quiz.dto';
 
@@ -99,13 +99,17 @@ export class QuizService {
   }
 
   async cloneQuizById(quiz_id: string, new_auth_id: string) {
-    const quiz = await this.em.findOneOrFail(
+    const quiz = await this.em.findOne(
       Quiz,
-      { quiz_id },
+      { quiz_id, $not: { published: null }, published: { is_public: true } },
       {
         populate: true,
       },
     );
+
+    if (!quiz) {
+      throw new NotFoundException();
+    }
 
     const new_quiz = wrap(quiz).toPOJO();
 
@@ -116,6 +120,10 @@ export class QuizService {
 
     new_quiz.published.version_id = undefined;
     new_quiz.published.quiz = undefined;
+    new_quiz.published.title = new_quiz.published.title + ' (Clone)';
+    new_quiz.published.description =
+      new_quiz.published.description + ' (Clone)';
+    new_quiz.published.is_public = false;
 
     new_quiz.published.questions.forEach((question) => {
       question.question_id = undefined;
@@ -129,5 +137,7 @@ export class QuizService {
 
     const entity = this.em.create(Quiz, new_quiz);
     await this.em.persistAndFlush(entity);
+
+    return entity;
   }
 }

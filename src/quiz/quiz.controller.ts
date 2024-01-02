@@ -47,6 +47,7 @@ export class QuizController {
     @Param('id') quiz_id: string,
     @Query('auth_id') auth_id: string,
   ) {
-    await this.quizService.cloneQuizById(quiz_id, auth_id);
+    const quiz = await this.quizService.cloneQuizById(quiz_id, auth_id);
+    return this.quizService.fromQuizToQuizReturnDto(quiz);
   }
 }
