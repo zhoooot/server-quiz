@@ -8,9 +8,11 @@ import {
   Body,
   Delete,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { DraftService } from './draft.service';
-import { QuizDto } from './dtos/quiz.dto';
+import { QuizDto, quizDto } from './dtos/quiz.dto';
+import { ZodGuard } from 'src/common/guards/zod.guard';
 
 @Controller('draft')
 export class DraftController {
@@ -46,8 +48,9 @@ export class DraftController {
     };
   }
 
+  @UseGuards(new ZodGuard(quizDto))
   @Put()
-  async updateQuiz(@Body() dto: QuizDto): Promise<{
+  async updateDraft(@Body() dto: QuizDto): Promise<{
     quiz_id: string;
   }> {
     if (dto.quiz_id === undefined) {

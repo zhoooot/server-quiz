@@ -5,7 +5,7 @@ export const quizDto = z.object({
   auth_id: z.string(),
   title: z.string(),
   description: z.string().optional(),
-  num_play_times: z.number(),
+  num_play_times: z.number().optional(),
   is_public: z.boolean(),
   created_at: z.number().optional(),
   questions: z.array(

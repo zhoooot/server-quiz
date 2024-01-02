@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+} from '@nestjs/common';
 import { z } from 'zod';
 
 @Injectable()
@@ -15,7 +20,7 @@ export class ZodGuard implements CanActivate {
 
       return true;
     } catch (error) {
-      return false;
+      throw new BadRequestException(error);
     }
   }
 }

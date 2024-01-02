@@ -31,7 +31,7 @@ export class DraftService {
     }
 
     quiz.auth_id = dto.auth_id;
-    quiz.num_play_times = dto.num_play_times;
+    quiz.num_play_times = 0;
 
     const draft = new Version();
     draft.title = dto.title;
