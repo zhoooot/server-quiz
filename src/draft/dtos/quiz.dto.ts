@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const quizDto = z.object({
-  quiz_id: z.string().optional(), // if there is no quiz_id, it will be generated
+  quiz_id: z.string().optional(),
   auth_id: z.string(),
   title: z.string(),
   description: z.string().optional(),

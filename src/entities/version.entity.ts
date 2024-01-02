@@ -12,7 +12,12 @@ import { Question } from './question.entity';
 
 @Entity()
 export class Version {
-  @OneToOne({ entity: () => Quiz, name: 'quiz_id', onDelete: 'cascade' })
+  @OneToOne({
+    entity: () => Quiz,
+    name: 'quiz_id',
+    onDelete: 'cascade',
+    unique: false,
+  })
   quiz: Quiz;
 
   @PrimaryKey({ type: 'uuid' })
