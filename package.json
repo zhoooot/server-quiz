@@ -19,7 +19,12 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "mikro-orm": "npx mikro-orm",
-    "mikro-orm:schema:update": "npm run mikro-orm -- schema:update -r"
+    "mikro-orm:schema:update": "npm run mikro-orm -- schema:update -r",
+    "mikro-orm:schema:drop": "npm run mikro-orm -- schema:drop -r",
+    "mikro-orm:migration:create": "npm run mikro-orm -- migration:create",
+    "mikro-orm:migration:up": "npm run mikro-orm -- migration:up",
+    "mikro-orm:migration:down": "npm run mikro-orm -- migration:down",
+    "mikro-orm:migration:fresh": "npm run mikro-orm -- migration:fresh"
   },
   "dependencies": {
     "@mikro-orm/cli": "^5.9.7",
@@ -37,6 +42,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@mikro-orm/migrations": "^5.9.7",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",

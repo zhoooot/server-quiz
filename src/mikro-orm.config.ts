@@ -7,8 +7,8 @@ export const config: Options = {
   clientUrl: process.env.DATABASE_URL,
   entities: [Quiz],
   migrations: {
-    path: '/dist/migrations',
-    pathTs: '/src/migrations',
+    path: 'dist/migrations',
+    pathTs: 'src/migrations',
   },
 };
 
