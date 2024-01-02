@@ -1,0 +1,8 @@
+.vscode
+dist
+node_modules
+.gitiignore
+.env*
+docker-compose.yml
+Dockerfile
+.dockerignore
