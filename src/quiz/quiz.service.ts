@@ -1,38 +1,10 @@
 import { EntityManager, wrap } from '@mikro-orm/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Quiz } from 'src/entities/quiz.entity';
-import { QuizReturnDto } from './dtos/quiz.dto';
 
 @Injectable()
 export class QuizService {
   constructor(private readonly em: EntityManager) {}
-
-  fromQuizToQuizReturnDto(quiz: Quiz): QuizReturnDto {
-    const { quiz_id, auth_id, created_at, num_play_times, published } = quiz;
-
-    return {
-      quiz_id,
-      auth_id,
-      created_at: created_at.getTime(),
-      num_play_times,
-      is_public: published.is_public,
-      num_questions: published.questions.length,
-      has_draft: quiz.draft !== null,
-      title: published.title,
-      description: published.description,
-      questions: published.questions.map((question) => ({
-        index: question.index,
-        question: question.question,
-        time_limit: question.time,
-        allow_powerups: question.allow_powerups,
-        answers: question.answers.map((answer) => ({
-          index: answer.index,
-          answer: answer.answer,
-          is_correct: answer.is_correct,
-        })),
-      })),
-    };
-  }
 
   async getPublicQuiz(page?: number, limit?: number): Promise<Quiz[]> {
     const list = await this.em.find(

@@ -13,19 +13,13 @@ import {
 import { DraftService } from './draft.service';
 import { QuizDto, quizDto } from './dtos/quiz.dto';
 import { ZodGuard } from 'src/common/guards/zod.guard';
+import { Quiz } from 'src/entities/quiz.entity';
 
 @Controller('draft')
 export class DraftController {
   constructor(private readonly draftService: DraftService) {}
 
-  @Get(':quiz_id')
-  async getQuiz(@Param('quiz_id') quiz_id: string): Promise<QuizDto> {
-    const quiz = await this.draftService.getDraft(quiz_id);
-
-    if (quiz === null) {
-      throw new HttpException('Quiz not found', HttpStatus.BAD_REQUEST);
-    }
-
+  private formatDraft(quiz: Quiz): QuizDto {
     return {
       quiz_id: quiz.quiz_id,
       auth_id: quiz.auth_id,
@@ -46,6 +40,17 @@ export class DraftController {
         })),
       })),
     };
+  }
+
+  @Get(':quiz_id')
+  async getQuiz(@Param('quiz_id') quiz_id: string): Promise<QuizDto> {
+    const quiz = await this.draftService.getDraft(quiz_id);
+
+    if (quiz === null) {
+      throw new HttpException('Draft not found', HttpStatus.NOT_FOUND);
+    }
+
+    return this.formatDraft(quiz);
   }
 
   @UseGuards(new ZodGuard(quizDto))
