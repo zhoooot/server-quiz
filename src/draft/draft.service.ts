@@ -152,6 +152,33 @@ export class DraftService {
       { populate: true },
     );
 
+    for (const question of quiz.draft.questions) {
+      if (question.question.length === 0) {
+        throw new HttpException(
+          'There is a question with no text',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      if (question.answers.length < 2) {
+        throw new HttpException(
+          'At least 2 answers are required for each question',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const num_correct = question.answers.filter(
+        (answer) => answer.is_correct,
+      ).length;
+
+      if (num_correct === 0) {
+        throw new HttpException(
+          'There is a question with no correct answers',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+
     if (quiz.draft === null) {
       return;
     }
