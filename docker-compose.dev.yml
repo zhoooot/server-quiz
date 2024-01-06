@@ -1,18 +1,17 @@
 version: '3'
 
 services:
-  service:
-    build: .
-    restart: always
-    env_file:
-      - .env.docker
-    ports:
-      - "4000:3000"
   db:
     image: postgres:9.6
-    hostname: db
     restart: always
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080

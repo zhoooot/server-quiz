@@ -27,6 +27,7 @@
     "mikro-orm:migration:fresh": "npm run mikro-orm -- migration:fresh"
   },
   "dependencies": {
+    "@golevelup/nestjs-rabbitmq": "^4.1.0",
     "@mikro-orm/cli": "^5.9.7",
     "@mikro-orm/core": "^5.9.7",
     "@mikro-orm/nestjs": "^5.2.3",

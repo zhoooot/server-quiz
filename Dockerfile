@@ -16,13 +16,16 @@ RUN npm run build
 FROM node:18-alpine
 WORKDIR /app
 
-COPY --from=build /app/node_modules /app/node_modules
-COPY --from=build /app/dist /app/dist
-COPY --from=build /app/package.json /app/package.json
-COPY --from=build /app/package-lock.json /app/package-lock.json
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/package*.json .
 
 RUN npm install --production
 
-EXPOSE 3000
+RUN echo "#!/bin/sh" > /app/entrypoint.sh
+RUN echo "set -e" >> /app/entrypoint.sh
+RUN echo "npm run mikro-orm:migration:up" >> /app/entrypoint.sh
+RUN echo "npm run start:prod" >> /app/entrypoint.sh
 
-CMD [ "npm", "run", "start:prod" ]
+EXPOSE 3000
+CMD [ "/bin/sh", "./entrypoint.sh" ]
