@@ -8,6 +8,10 @@ export class QuizController {
   constructor(private readonly quizService: QuizService) {}
 
   private fromQuizToQuizReturnDto(quiz: Quiz): QuizReturnDto {
+    if (quiz === null) {
+      return null;
+    }
+
     const { quiz_id, auth_id, created_at, num_play_times, published } = quiz;
 
     return {
@@ -58,7 +62,6 @@ export class QuizController {
   @Get(':id')
   async getQuizById(@Param('id') quiz_id: string) {
     const quiz = await this.quizService.getQuizById(quiz_id);
-
     return this.fromQuizToQuizReturnDto(quiz);
   }
 
