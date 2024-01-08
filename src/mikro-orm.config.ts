@@ -17,6 +17,11 @@ export const config: Options = {
     path: 'dist/seeds',
     pathTs: 'src/seeds',
   },
+  pool: {
+    max: 3,
+    acquireTimeoutMillis: 30000,
+    idleTimeoutMillis: 10000,
+  },
   driverOptions: {
     connection: {
       ssl: {

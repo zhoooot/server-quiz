@@ -1,4 +1,13 @@
-import { Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { validate as isUUID } from 'uuid';
 import { QuizService } from './quiz.service';
 import { Quiz } from 'src/entities/quiz.entity';
 import { QuizReturnDto } from './dtos/quiz.dto';
@@ -24,17 +33,21 @@ export class QuizController {
       has_draft: quiz.draft !== null,
       title: published.title,
       description: published.description,
-      questions: published.questions.map((question) => ({
-        index: question.index,
-        question: question.question,
-        time_limit: question.time,
-        allow_powerups: question.allow_powerups,
-        answers: question.answers.map((answer) => ({
-          index: answer.index,
-          answer: answer.answer,
-          is_correct: answer.is_correct,
-        })),
-      })),
+      questions: published.questions
+        .map((question) => ({
+          index: question.index,
+          question: question.question,
+          time_limit: question.time,
+          allow_powerups: question.allow_powerups,
+          answers: question.answers
+            .map((answer) => ({
+              index: answer.index,
+              answer: answer.answer,
+              is_correct: answer.is_correct,
+            }))
+            .sort((a, b) => a.index - b.index),
+        }))
+        .sort((a, b) => a.index - b.index),
     };
   }
 
@@ -54,6 +67,10 @@ export class QuizController {
     @Query('page') page: number,
     @Query('limit') limit: number,
   ) {
+    if (!isUUID(auth_id)) {
+      throw new BadRequestException('Invalid auth_id');
+    }
+
     const quizList = await this.quizService.getQuizOfUser(auth_id, page, limit);
 
     return quizList.map((quiz) => this.fromQuizToQuizReturnDto(quiz));
@@ -61,12 +78,20 @@ export class QuizController {
 
   @Get(':id')
   async getQuizById(@Param('id') quiz_id: string) {
+    if (!isUUID(quiz_id)) {
+      throw new BadRequestException('Invalid quiz_id');
+    }
+
     const quiz = await this.quizService.getQuizById(quiz_id);
     return this.fromQuizToQuizReturnDto(quiz);
   }
 
   @Delete(':id')
   async deleteQuizById(@Param('id') quiz_id: string) {
+    if (!isUUID(quiz_id)) {
+      throw new BadRequestException('Invalid quiz_id');
+    }
+
     await this.quizService.deleteQuizById(quiz_id);
   }
 
@@ -75,6 +100,10 @@ export class QuizController {
     @Param('id') quiz_id: string,
     @Query('auth_id') auth_id: string,
   ) {
+    if (!isUUID(quiz_id) || !isUUID(auth_id)) {
+      throw new BadRequestException('Invalid quiz_id or auth_id');
+    }
+
     const quiz = await this.quizService.cloneQuizById(quiz_id, auth_id);
     return this.fromQuizToQuizReturnDto(quiz);
   }

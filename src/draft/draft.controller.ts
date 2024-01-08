@@ -10,6 +10,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
+import { validate as isUUID } from 'uuid';
 import { DraftService } from './draft.service';
 import { QuizDto, quizDto } from './dtos/quiz.dto';
 import { ZodGuard } from 'src/common/guards/zod.guard';
@@ -44,6 +45,10 @@ export class DraftController {
 
   @Get(':quiz_id')
   async getQuiz(@Param('quiz_id') quiz_id: string): Promise<QuizDto> {
+    if (!isUUID(quiz_id)) {
+      throw new HttpException('Invalid quiz id', HttpStatus.BAD_REQUEST);
+    }
+
     const quiz = await this.draftService.getDraft(quiz_id);
 
     if (quiz === null) {
@@ -69,11 +74,19 @@ export class DraftController {
 
   @Delete(':quiz_id')
   async deleteQuiz(@Param('quiz_id') quiz_id: string): Promise<void> {
+    if (!isUUID(quiz_id)) {
+      throw new HttpException('Invalid quiz id', HttpStatus.BAD_REQUEST);
+    }
+
     await this.draftService.deleteDraft(quiz_id);
   }
 
   @Post(':quiz_id/publish')
   async publishQuiz(@Param('quiz_id') quiz_id: string): Promise<void> {
+    if (!isUUID(quiz_id)) {
+      throw new HttpException('Invalid quiz id', HttpStatus.BAD_REQUEST);
+    }
+
     await this.draftService.publishDraft(quiz_id);
   }
 }

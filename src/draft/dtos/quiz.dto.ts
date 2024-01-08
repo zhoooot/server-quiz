@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 export const quizDto = z.object({
-  quiz_id: z.string().optional(),
-  auth_id: z.string(),
+  quiz_id: z.string().uuid().optional(),
+  auth_id: z.string().uuid(),
   title: z.string(),
   description: z.string().optional(),
   num_play_times: z.number().optional(),
