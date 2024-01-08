@@ -11,6 +11,7 @@ export class QuizService {
       Quiz,
       {
         $not: { published: null },
+        published: { is_public: true },
       },
       {
         populate: true,
@@ -57,8 +58,8 @@ export class QuizService {
     return list;
   }
 
-  async getQuizById(quiz_id: string): Promise<Quiz> {
-    return await this.em.findOne(
+  async getQuizById(quiz_id: string, auth_id: string): Promise<Quiz> {
+    const quiz = await this.em.findOne(
       Quiz,
       {
         quiz_id,
@@ -68,6 +69,16 @@ export class QuizService {
         populate: true,
       },
     );
+
+    if (!quiz) {
+      throw new NotFoundException();
+    }
+
+    if (quiz.published?.is_public === false && quiz.auth_id !== auth_id) {
+      throw new NotFoundException();
+    }
+
+    return quiz;
   }
 
   async cloneQuizById(quiz_id: string, new_auth_id: string) {

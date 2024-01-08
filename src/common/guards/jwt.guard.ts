@@ -14,9 +14,14 @@ export class JwtGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
 
     const { authorization } = request.headers;
+
+    if (!authorization) {
+      throw new BadRequestException('Missing token');
+    }
+
     const [bearer, token] = authorization.split(' ');
 
-    console.log(bearer, token);
+    // console.log(bearer, token);
 
     if (bearer !== 'Bearer') {
       throw new BadRequestException('Invalid token');

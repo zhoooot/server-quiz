@@ -86,12 +86,14 @@ export class QuizController {
 
   @UseGuards(JwtGuard)
   @Get(':id')
-  async getQuizById(@Param('id') quiz_id: string) {
+  async getQuizById(@Param('id') quiz_id: string, @Req() request) {
     if (!isUUID(quiz_id)) {
       throw new BadRequestException('Invalid quiz_id');
     }
 
-    const quiz = await this.quizService.getQuizById(quiz_id);
+    const { auth_id } = request.user;
+
+    const quiz = await this.quizService.getQuizById(quiz_id, auth_id);
     return this.fromQuizToQuizReturnDto(quiz);
   }
 
@@ -107,20 +109,12 @@ export class QuizController {
 
   @UseGuards(JwtGuard)
   @Post(':id/clone')
-  async cloneQuizById(
-    @Param('id') quiz_id: string,
-    @Query('auth_id') auth_id: string,
-    @Req() request,
-  ) {
-    if (!isUUID(quiz_id) || !isUUID(auth_id)) {
-      throw new BadRequestException('Invalid quiz_id or auth_id');
+  async cloneQuizById(@Param('id') quiz_id: string, @Req() request) {
+    if (!isUUID(quiz_id)) {
+      throw new BadRequestException('Invalid quiz_id');
     }
 
-    const { auth_id: auth_id_from_token } = request.user;
-
-    if (auth_id_from_token !== auth_id) {
-      throw new BadRequestException('Invalid auth_id');
-    }
+    const { auth_id } = request.user;
 
     const quiz = await this.quizService.cloneQuizById(quiz_id, auth_id);
     return this.fromQuizToQuizReturnDto(quiz);
