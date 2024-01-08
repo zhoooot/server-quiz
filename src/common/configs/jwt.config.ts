@@ -1,5 +1,5 @@
 import 'dotenv/config';
 
 export const config = {
-  jwtSecret: process.env.JWT_SECRET,
+  jwtPublicKey: process.env.JWT_PUBLIC_KEY,
 };

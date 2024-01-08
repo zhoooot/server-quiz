@@ -6,11 +6,14 @@ import {
   Param,
   Post,
   Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { validate as isUUID } from 'uuid';
 import { QuizService } from './quiz.service';
 import { Quiz } from 'src/entities/quiz.entity';
 import { QuizReturnDto } from './dtos/quiz.dto';
+import { JwtGuard } from 'src/common/guards/jwt.guard';
 
 @Controller('quiz')
 export class QuizController {
@@ -32,6 +35,7 @@ export class QuizController {
       num_questions: published.questions.length,
       has_draft: quiz.draft !== null,
       title: published.title,
+      image: published.image,
       description: published.description,
       questions: published.questions
         .map((question) => ({
@@ -39,6 +43,7 @@ export class QuizController {
           question: question.question,
           time_limit: question.time,
           allow_powerups: question.allow_powerups,
+          image: question.image,
           answers: question.answers
             .map((answer) => ({
               index: answer.index,
@@ -61,12 +66,15 @@ export class QuizController {
     return quizList.map((quiz) => this.fromQuizToQuizReturnDto(quiz));
   }
 
+  @UseGuards(JwtGuard)
   @Get()
   async getQuizByUserId(
-    @Query('auth_id') auth_id: string,
     @Query('page') page: number,
     @Query('limit') limit: number,
+    @Req() request,
   ) {
+    const { auth_id } = request.user;
+
     if (!isUUID(auth_id)) {
       throw new BadRequestException('Invalid auth_id');
     }
@@ -76,6 +84,7 @@ export class QuizController {
     return quizList.map((quiz) => this.fromQuizToQuizReturnDto(quiz));
   }
 
+  @UseGuards(JwtGuard)
   @Get(':id')
   async getQuizById(@Param('id') quiz_id: string) {
     if (!isUUID(quiz_id)) {
@@ -86,6 +95,7 @@ export class QuizController {
     return this.fromQuizToQuizReturnDto(quiz);
   }
 
+  @UseGuards(JwtGuard)
   @Delete(':id')
   async deleteQuizById(@Param('id') quiz_id: string) {
     if (!isUUID(quiz_id)) {
@@ -95,13 +105,21 @@ export class QuizController {
     await this.quizService.deleteQuizById(quiz_id);
   }
 
+  @UseGuards(JwtGuard)
   @Post(':id/clone')
   async cloneQuizById(
     @Param('id') quiz_id: string,
     @Query('auth_id') auth_id: string,
+    @Req() request,
   ) {
     if (!isUUID(quiz_id) || !isUUID(auth_id)) {
       throw new BadRequestException('Invalid quiz_id or auth_id');
+    }
+
+    const { auth_id: auth_id_from_token } = request.user;
+
+    if (auth_id_from_token !== auth_id) {
+      throw new BadRequestException('Invalid auth_id');
     }
 
     const quiz = await this.quizService.cloneQuizById(quiz_id, auth_id);

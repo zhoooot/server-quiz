@@ -93,6 +93,7 @@ export class QuizService {
     new_quiz.published.version_id = undefined;
     new_quiz.published.quiz = undefined;
     new_quiz.published.title = new_quiz.published.title + ' (Clone)';
+    new_quiz.published.image = new_quiz.published.image;
     new_quiz.published.description =
       new_quiz.published.description + ' (Clone)';
     new_quiz.published.is_public = false;

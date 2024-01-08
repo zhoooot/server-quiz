@@ -8,12 +8,14 @@ export const quizDto = z.object({
   num_play_times: z.number().optional(),
   is_public: z.boolean(),
   created_at: z.number().optional(),
+  image: z.string().optional(),
   questions: z.array(
     z.object({
       index: z.number(),
       question: z.string(),
       time_limit: z.number(),
       allow_powerups: z.boolean(),
+      image: z.string().optional(),
       answers: z.array(
         z.object({
           index: z.number(),

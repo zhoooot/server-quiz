@@ -38,6 +38,7 @@ export class DraftService {
     draft.description = dto.description;
     draft.is_public = dto.is_public;
     draft.quiz = quiz;
+    draft.image = dto.image;
     quiz.draft = draft;
 
     draft.questions.set(
@@ -48,6 +49,7 @@ export class DraftService {
         q.question = question.question;
         q.time = question.time_limit;
         q.allow_powerups = question.allow_powerups;
+        q.image = question.image;
         q.version = draft;
 
         q.answers.set(
@@ -88,6 +90,7 @@ export class DraftService {
     draft.title = dto.title;
     draft.description = dto.description;
     draft.is_public = dto.is_public;
+    draft.image = dto.image;
     draft.quiz = quiz;
 
     await this.em.nativeDelete(Question, { version: draft });
@@ -101,6 +104,7 @@ export class DraftService {
         q.time = question.time_limit;
         q.allow_powerups = question.allow_powerups;
         q.version = draft;
+        q.image = question.image;
 
         q.answers.set(
           question.answers.map((answer) => {

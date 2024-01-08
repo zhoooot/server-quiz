@@ -27,5 +27,5 @@ RUN echo "set -e" >> /app/entrypoint.sh
 RUN echo "npm run mikro-orm:migration:up" >> /app/entrypoint.sh
 RUN echo "npm run start:prod" >> /app/entrypoint.sh
 
-EXPOSE 3000
+EXPOSE 4000
 CMD [ "/bin/sh", "./entrypoint.sh" ]

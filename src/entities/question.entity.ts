@@ -29,6 +29,9 @@ export class Question {
   @Property({ type: 'text' })
   question: string;
 
+  @Property({ nullable: true })
+  image?: string;
+
   @Property()
   time: number;
 

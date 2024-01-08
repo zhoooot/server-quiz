@@ -32,6 +32,9 @@ export class Version {
   @Property({ default: false })
   is_public: boolean;
 
+  @Property({ nullable: true })
+  image?: string;
+
   @OneToMany({ entity: () => Question, mappedBy: 'version' })
   questions = new Collection<Question>(this);
 }
