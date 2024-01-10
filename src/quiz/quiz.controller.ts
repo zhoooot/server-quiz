@@ -14,10 +14,14 @@ import { QuizService } from './quiz.service';
 import { Quiz } from 'src/entities/quiz.entity';
 import { QuizReturnDto } from './dtos/quiz.dto';
 import { JwtGuard } from 'src/common/guards/jwt.guard';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 @Controller('quiz')
 export class QuizController {
-  constructor(private readonly quizService: QuizService) {}
+  constructor(
+    private readonly quizService: QuizService,
+    private readonly amqpConnection: AmqpConnection,
+  ) {}
 
   private fromQuizToQuizReturnDto(quiz: Quiz): QuizReturnDto {
     if (quiz === null) {
@@ -118,5 +122,36 @@ export class QuizController {
 
     const quiz = await this.quizService.cloneQuizById(quiz_id, auth_id);
     return this.fromQuizToQuizReturnDto(quiz);
+  }
+
+  // @UseGuards(JwtGuard)
+  @Post(':id/start')
+  async startQuizById(
+    @Param('id') quiz_id: string,
+    @Query('auth_id') auth_id: string,
+    @Req() request,
+  ) {
+    if (!isUUID(quiz_id)) {
+      throw new BadRequestException('Invalid quiz_id');
+    }
+
+    // const { auth_id } = request.user;
+
+    const quiz = await this.quizService.getQuizById(quiz_id, auth_id);
+
+    const rawDto = this.fromQuizToQuizReturnDto(quiz);
+
+    if (quiz === null) {
+      throw new BadRequestException('Quiz not found');
+    }
+
+    const resource = await this.amqpConnection.request({
+      exchange: 'game',
+      routingKey: 'game.create',
+      payload: { rawDto },
+      timeout: 10000,
+    });
+
+    return resource;
   }
 }

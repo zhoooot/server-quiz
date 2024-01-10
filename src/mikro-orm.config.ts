@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { Options } from '@mikro-orm/postgresql';
+import { SeedManager } from '@mikro-orm/seeder';
 import { Quiz } from './entities/quiz.entity';
 import { Question } from './entities/question.entity';
 import { Answer } from './entities/answer.entity';
@@ -22,6 +23,7 @@ export const config: Options = {
     acquireTimeoutMillis: 30000,
     idleTimeoutMillis: 10000,
   },
+  extensions: [SeedManager],
   driverOptions: {
     connection: {
       ssl: {

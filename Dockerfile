@@ -1,6 +1,3 @@
-ARG DATABASE_URL
-ARG JWT_SECRET
-
 FROM node:18-alpine AS build
 
 WORKDIR /app
@@ -21,6 +18,9 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/package*.json .
 
 RUN npm install --production
+
+ENV DATABASE_URL=
+ENV JWT_SECRET=
 
 RUN echo "#!/bin/sh" > /app/entrypoint.sh
 RUN echo "set -e" >> /app/entrypoint.sh
