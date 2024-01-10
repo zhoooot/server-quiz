@@ -10,6 +10,25 @@ import { Answer } from 'src/entities/answer.entity';
 export class DraftService {
   constructor(private readonly em: EntityManager) {}
 
+  async getDraftOfUser(auth_id: string, page?: number, limit?: number) {
+    const list = await this.em.find(
+      Quiz,
+      {
+        auth_id,
+        $not: { draft: null },
+      },
+      {
+        populate: true,
+        limit,
+        offset: page * limit,
+      },
+    );
+
+    console.log(list);
+
+    return list === null ? [] : list;
+  }
+
   async getDraft(quiz_id: string) {
     return await this.em.findOne(
       Quiz,

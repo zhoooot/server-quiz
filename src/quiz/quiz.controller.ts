@@ -124,18 +124,14 @@ export class QuizController {
     return this.fromQuizToQuizReturnDto(quiz);
   }
 
-  // @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard)
   @Post(':id/start')
-  async startQuizById(
-    @Param('id') quiz_id: string,
-    @Query('auth_id') auth_id: string,
-    @Req() request,
-  ) {
+  async startQuizById(@Param('id') quiz_id: string, @Req() request) {
     if (!isUUID(quiz_id)) {
       throw new BadRequestException('Invalid quiz_id');
     }
 
-    // const { auth_id } = request.user;
+    const { auth_id } = request.user;
 
     const quiz = await this.quizService.getQuizById(quiz_id, auth_id);
 

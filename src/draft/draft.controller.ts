@@ -9,12 +9,16 @@ import {
   Delete,
   Put,
   UseGuards,
+  Query,
+  Req,
+  BadRequestException,
 } from '@nestjs/common';
 import { validate as isUUID } from 'uuid';
 import { DraftService } from './draft.service';
 import { QuizDto, quizDto } from './dtos/quiz.dto';
 import { ZodGuard } from 'src/common/guards/zod.guard';
 import { Quiz } from 'src/entities/quiz.entity';
+import { JwtGuard } from 'src/common/guards/jwt.guard';
 
 @Controller('draft')
 export class DraftController {
@@ -28,6 +32,7 @@ export class DraftController {
       description: quiz.draft.description,
       num_play_times: quiz.num_play_times,
       is_public: quiz.draft.is_public,
+      image: quiz.draft.image,
       created_at: quiz.created_at.getTime(),
       questions: quiz.draft.questions.map((question) => ({
         index: question.index,
@@ -41,6 +46,28 @@ export class DraftController {
         })),
       })),
     };
+  }
+
+  @UseGuards(JwtGuard)
+  @Get()
+  async getQuizByUserId(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Req() request,
+  ) {
+    const { auth_id } = request.user;
+
+    if (!isUUID(auth_id)) {
+      throw new BadRequestException('Invalid auth_id');
+    }
+
+    const quizList = await this.draftService.getDraftOfUser(
+      auth_id,
+      page,
+      limit,
+    );
+
+    return quizList.map((quiz) => this.formatDraft(quiz));
   }
 
   @Get(':quiz_id')
