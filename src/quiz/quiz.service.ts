@@ -1,6 +1,8 @@
 import { EntityManager, wrap } from '@mikro-orm/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Quiz } from 'src/entities/quiz.entity';
+import { GoogleGenerativeAI } from "@google/generative-ai";
+const genAI = new GoogleGenerativeAI('AIzaSyDHkLRg2W5hCNKDxZbjeNIfh7aCNFxus_I');
 
 @Injectable()
 export class QuizService {
@@ -123,5 +125,49 @@ export class QuizService {
     await this.em.persistAndFlush(entity);
 
     return entity;
+  }
+
+  async generateQuizByGemini(auth_id:string, theme:string, num_quiz: number) {
+    const prompt = `Create a quiz about ${theme} with ${num_quiz} questions. Please write out these questions so that they strictly follow the following convention of JSON.  
+    {quiz_id: string;
+    auth_id: string;
+    title: string;
+    description?: string;
+    num_play_times: number;
+    is_public: boolean;
+    created_at: number;
+    num_questions: number;
+    has_draft: boolean;
+    image?: string;
+    questions: {
+      index: number;
+      question: string;
+      time_limit: number;
+      allow_powerups: boolean;
+      image?: string;
+      question_type: number;
+      answers: {
+        index: number;
+        answer: string;
+        is_correct: boolean;
+      }[];
+    }[];}
+    The 'answer' should not have the prefix.
+The 'index' should be in form of (0, 1, 2, 3).
+'question_type' should be 0 or 1, 0 has four answers, 1 has two answers (true/false question).
+If the question is a true/false question, the 'answers' should only have two elements, else 
+the 'answers' should have four elements.
+    `;
+    const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text= response.text().replace(/```json\s+/, '').replace(/\s+```/, '');
+    
+    const quiz= JSON.parse(text);
+    quiz.created_at = new Date().getTime();
+    quiz.auth_id= auth_id;
+    quiz.quiz_id= undefined;
+    return quiz;
   }
 }

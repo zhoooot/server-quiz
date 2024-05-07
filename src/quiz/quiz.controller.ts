@@ -150,4 +150,11 @@ export class QuizController {
 
     return resource;
   }
+  @UseGuards(JwtGuard)
+  @Post('/gemini')
+  async generateQuizByGemini(@Param('theme') theme: string, @Param('num') num_quiz: number, @Req() request) {
+    const auth_id = request.user.auth_id;
+    const quiz = await this.quizService.generateQuizByGemini(auth_id,theme, num_quiz);
+    return this.fromQuizToQuizReturnDto(quiz);
+  }
 }
