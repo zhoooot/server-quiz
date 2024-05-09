@@ -147,14 +147,24 @@ export class QuizController {
       payload: { rawDto },
       timeout: 10000,
     });
-
     return resource;
   }
-  @UseGuards(JwtGuard)
+
+  //@UseGuards(JwtGuard)
   @Post('/gemini')
-  async generateQuizByGemini(@Param('theme') theme: string, @Param('num') num_quiz: number, @Req() request) {
-    const auth_id = request.user.auth_id;
-    const quiz = await this.quizService.generateQuizByGemini(auth_id,theme, num_quiz);
+  async generateQuizByGemini(
+    @Query('theme') theme: string,
+    @Query('num') num_quiz: number,
+    //@Req() request,
+  ) {
+    console.log(theme);
+
+    //const auth_id = request.user.auth_id;
+    const quiz = await this.quizService.generateQuizByGemini(
+      'hta',
+      theme,
+      num_quiz,
+    );
     return this.fromQuizToQuizReturnDto(quiz);
   }
 }

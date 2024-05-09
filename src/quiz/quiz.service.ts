@@ -1,7 +1,7 @@
 import { EntityManager, wrap } from '@mikro-orm/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Quiz } from 'src/entities/quiz.entity';
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI } from '@google/generative-ai';
 const genAI = new GoogleGenerativeAI('AIzaSyDHkLRg2W5hCNKDxZbjeNIfh7aCNFxus_I');
 
 @Injectable()
@@ -127,24 +127,19 @@ export class QuizService {
     return entity;
   }
 
-  async generateQuizByGemini(auth_id:string, theme:string, num_quiz: number) {
+  async generateQuizByGemini(auth_id: string, theme: string, num_quiz: number) {
+    console.log(theme);
     const prompt = `Create a quiz about ${theme} with ${num_quiz} questions. Please write out these questions so that they strictly follow the following convention of JSON.  
-    {quiz_id: string;
-    auth_id: string;
+    {
+    created_at: Date;
     title: string;
     description?: string;
     num_play_times: number;
-    is_public: boolean;
-    created_at: number;
     num_questions: number;
-    has_draft: boolean;
-    image?: string;
     questions: {
       index: number;
       question: string;
       time_limit: number;
-      allow_powerups: boolean;
-      image?: string;
       question_type: number;
       answers: {
         index: number;
@@ -162,12 +157,14 @@ the 'answers' should have four elements.
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    const text= response.text().replace(/```json\s+/, '').replace(/\s+```/, '');
-    
-    const quiz= JSON.parse(text);
-    quiz.created_at = new Date().getTime();
-    quiz.auth_id= auth_id;
-    quiz.quiz_id= undefined;
+    console.log(response.text());
+    // const pattern = /\{\s*title: string;\s*description?: string;\s*num_play_times: number;\s*created_at: number;\s*num_questions: number;\s*questions: \[\s*\{\s*index: number;\s*question: string;\s*time_limit: number;\s*question_type: number;\s*answers: \[\s*\{\s*index: number;\s*answer: string;\s*is_correct: boolean;\s*\}];\s*\}\]\s*\};/;
+    // const jsonMatch = response.text().match(pattern);
+    // console.log(jsonMatch[0]);
+    const text= response.text().replace(/```json\s+/, '').replace(/\s+```/, '').replace(/```JSON\s+/, '');
+    console.log(text);
+    const quiz: Quiz = JSON.parse(text);
+    console.log(quiz);
     return quiz;
   }
 }
