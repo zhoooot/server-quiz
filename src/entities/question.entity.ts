@@ -40,4 +40,6 @@ export class Question {
 
   @OneToMany(() => Answer, (answer) => answer.question)
   answers = new Collection<Answer>(this);
+
+  
 }

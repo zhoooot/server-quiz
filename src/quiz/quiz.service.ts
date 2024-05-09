@@ -2,6 +2,8 @@ import { EntityManager, wrap } from '@mikro-orm/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Quiz } from 'src/entities/quiz.entity';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+export { QuizFromGemini } from './quiz.adapter';
+import { QuizAdapter } from './quiz.adapter';
 const genAI = new GoogleGenerativeAI('AIzaSyDHkLRg2W5hCNKDxZbjeNIfh7aCNFxus_I');
 
 @Injectable()
@@ -131,7 +133,7 @@ export class QuizService {
     console.log(theme);
     const prompt = `Create a quiz about ${theme} with ${num_quiz} questions. Please write out these questions so that they strictly follow the following convention of JSON.  
     {
-    
+    auth_id:string;
     title: string;
     description?: string;
     num_play_times: number;
@@ -157,16 +159,14 @@ the 'answers' should have four elements.
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
-   // console.log(response.text());
-    // const pattern = /\{\s*title: string;\s*description?: string;\s*num_play_times: number;\s*created_at: number;\s*num_questions: number;\s*questions: \[\s*\{\s*index: number;\s*question: string;\s*time_limit: number;\s*question_type: number;\s*answers: \[\s*\{\s*index: number;\s*answer: string;\s*is_correct: boolean;\s*\}];\s*\}\]\s*\};/;
-    // const jsonMatch = response.text().match(pattern);
-    // console.log(jsonMatch[0]);
-    const text= response.text().replace(/```json\s+/, '').replace(/\s+```/, '').replace(/```JSON\s+/, '');
+  console.log(response.text());
+    const text= response.text().replace(/```json\s+/, '').replace(/\s+```/, '').replace(/```JSON\s+/, '').replace(/\s+```/, '').replace(/```\s+/, '');
 
-    const quiz: Quiz = JSON.parse(text);
-    quiz.created_at = new Date();
-    console.log(JSON.parse(text));
-    //console.log(quiz);
-    return quiz;
+    const quiz = await new QuizAdapter(text);
+    const entity=quiz.adaptToQuizEntity();
+
+
+    
+    return entity;
   }
 }
