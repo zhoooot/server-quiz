@@ -28,26 +28,21 @@ export class QuizController {
       return null;
     }
 
-    const { quiz_id, auth_id, created_at, num_play_times, published } = quiz;
+    const { quiz_id, auth_id, created_at, published } = quiz;
 
     return {
       quiz_id,
       auth_id,
       created_at: created_at.getTime(),
-      num_play_times,
-      is_public: published.is_public,
+      
       num_questions: published.questions.length,
-      has_draft: quiz.draft !== null,
       title: published.title,
-      image: published.image,
       description: published.description,
       questions: published.questions
         .map((question) => ({
           index: question.index,
           question: question.question,
           time_limit: question.time,
-          allow_powerups: question.allow_powerups,
-          image: question.image,
           answers: question.answers
             .map((answer) => ({
               index: answer.index,

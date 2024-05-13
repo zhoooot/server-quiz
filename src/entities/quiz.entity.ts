@@ -13,11 +13,10 @@ export class Quiz {
   @Property({ type: 'timestamp', onCreate: () => new Date() })
   created_at: Date;
 
-  @Property({ default: 0 })
-  num_play_times: number;
+ 
 
-  @OneToOne({ entity: () => Version, inversedBy: 'quiz', nullable: true })
-  draft?: Version;
+  // @OneToOne({ entity: () => Version, inversedBy: 'quiz', nullable: true })
+  // draft?: Version;
 
   @OneToOne({ entity: () => Version, inversedBy: 'quiz', nullable: true })
   published?: Version;

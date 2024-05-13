@@ -9,13 +9,11 @@ interface QuizFromGemini {
     auth_id: string;
     title: string;
     description?: string;
-    num_play_times: string;
     num_questions: string;
     questions: {
         index: string;
         question: string;
         time_limit: string;
-        allow_powerups: string;
         answers: {
             index: string;
             answer: string;
@@ -47,7 +45,6 @@ export class QuizAdapter {
         quiz.quiz_id = uuidv4(); // Assuming quiz_id is generated using uuid
         quiz.auth_id = this.quizFromGemini.auth_id;
         quiz.created_at = new Date();
-        quiz.num_play_times = parseInt(this.quizFromGemini.num_play_times);
         quiz.published = version;
         for (let question of this.quizFromGemini.questions) {
             const newQuestion = new Question();
@@ -56,7 +53,6 @@ export class QuizAdapter {
             newQuestion.index = parseInt(question.index);
             newQuestion.question = question.question;
             newQuestion.time = parseInt(question.time_limit);
-            newQuestion.allow_powerups = this.parseBooleanString(question.allow_powerups);
             newQuestion.answers = new Collection<Answer>(newQuestion);
             for (let newAnswer of question.answers) {
                 const answer = new Answer();

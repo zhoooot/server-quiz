@@ -78,7 +78,7 @@ export class QuizService {
       throw new NotFoundException();
     }
 
-    if (quiz.published?.is_public === false && quiz.auth_id !== auth_id) {
+    if (quiz.auth_id !== auth_id) {
       throw new NotFoundException();
     }
 
@@ -88,7 +88,7 @@ export class QuizService {
   async cloneQuizById(quiz_id: string, new_auth_id: string) {
     const quiz = await this.em.findOne(
       Quiz,
-      { quiz_id, $not: { published: null }, published: { is_public: true } },
+      { quiz_id, $not: { published: null }},
       {
         populate: true,
       },
@@ -103,15 +103,12 @@ export class QuizService {
     new_quiz.quiz_id = undefined;
     new_quiz.auth_id = new_auth_id;
     new_quiz.created_at = new Date();
-    new_quiz.num_play_times = 0;
 
     new_quiz.published.version_id = undefined;
     new_quiz.published.quiz = undefined;
     new_quiz.published.title = new_quiz.published.title + ' (Clone)';
-    new_quiz.published.image = new_quiz.published.image;
     new_quiz.published.description =
       new_quiz.published.description + ' (Clone)';
-    new_quiz.published.is_public = false;
 
     new_quiz.published.questions.forEach((question) => {
       question.question_id = undefined;
@@ -121,7 +118,6 @@ export class QuizService {
       });
     });
 
-    new_quiz.draft = null;
 
     const entity = this.em.create(Quiz, new_quiz);
     await this.em.persistAndFlush(entity);
@@ -136,7 +132,6 @@ export class QuizService {
     auth_id:string;
     title: string;
     description?: string;
-    num_play_times: number;
     num_questions: number;
     questions: {
       index: number;
