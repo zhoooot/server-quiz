@@ -15,7 +15,6 @@ export class QuizService {
       Quiz,
       {
         $not: { published: null },
-        published: { is_public: true },
       },
       {
         populate: true,
@@ -67,17 +66,15 @@ export class QuizService {
       Quiz,
       {
         quiz_id,
-        $not: { published: null },
       },
       {
         populate: true,
       },
     );
-
+    console.log(quiz);
     if (!quiz) {
       throw new NotFoundException();
     }
-
     if (quiz.auth_id !== auth_id) {
       throw new NotFoundException();
     }
@@ -129,7 +126,7 @@ export class QuizService {
     console.log(theme);
     const prompt = `Create a quiz about ${theme} with ${num_quiz} questions. Please write out these questions so that they strictly follow the following convention of JSON.  
     {
-    auth_id:string;
+    auth_id: ${auth_id};
     title: string;
     description?: string;
     num_questions: number;
@@ -159,8 +156,9 @@ the 'answers' should have four elements.
 
     const quiz = await new QuizAdapter(text);
     const entity=quiz.adaptToQuizEntity();
+   
 
-
+    console.log('entity completed');
     
     return entity;
   }

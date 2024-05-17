@@ -52,7 +52,7 @@ export class JwtGuard implements CanActivate {
         email,
         role,
       };
-
+      console.log('okay');
       return true;
     } catch (error) {
       throw new BadRequestException(error.message);

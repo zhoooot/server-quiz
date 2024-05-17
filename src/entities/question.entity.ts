@@ -29,14 +29,11 @@ export class Question {
   @Property({ type: 'text' })
   question: string;
 
-  @Property({ nullable: true })
-  image?: string;
 
   @Property()
   time: number;
 
-  @Property()
-  allow_powerups: boolean;
+
 
   @OneToMany(() => Answer, (answer) => answer.question)
   answers = new Collection<Answer>(this);

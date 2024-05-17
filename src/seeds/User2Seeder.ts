@@ -13,13 +13,11 @@ export class User2Seeder extends Seeder {
           title: 'Nicki Minaj Fan Quiz',
           description:
             'Test your knowledge about Nicki Minaj with this fun question!',
-          is_public: true,
           questions: [
             {
               index: 0,
               question: "What is Nicki Minaj's real name?",
               time: 60000,
-              allow_powerups: false,
               answers: [
                 { index: 0, answer: 'Onika Tanya Maraj', is_correct: true },
                 {

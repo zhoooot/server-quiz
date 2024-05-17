@@ -17,6 +17,7 @@ export const config: Options = {
   seeder: {
     path: 'dist/seeds',
     pathTs: 'src/seeds',
+    defaultSeeder: 'User1Seeder',
   },
   pool: {
     max: 3,
@@ -26,9 +27,9 @@ export const config: Options = {
   extensions: [SeedManager],
   driverOptions: {
     connection: {
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      ssl: process.env.NODE_ENV === 'production'
+      ? { rejectUnauthorized: false }
+      : false,
     },
   },
 };

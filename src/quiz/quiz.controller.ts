@@ -73,6 +73,7 @@ export class QuizController {
     @Req() request,
   ) {
     const { auth_id } = request.user;
+    //const auth_id = '7070afde-f8b5-487e-a288-f2be9d162b0b';
 
     if (!isUUID(auth_id)) {
       throw new BadRequestException('Invalid auth_id');
@@ -86,11 +87,14 @@ export class QuizController {
   @UseGuards(JwtGuard)
   @Get(':id')
   async getQuizById(@Param('id') quiz_id: string, @Req() request) {
+    
     if (!isUUID(quiz_id)) {
       throw new BadRequestException('Invalid quiz_id');
     }
-
-    const { auth_id } = request.user;
+    console.log(request.user);
+    const {auth_id} = request.user;
+   //  const auth_id  = '7070afde-f8b5-487e-a288-f2be9d162b0b';
+    console.log(quiz_id);
 
     const quiz = await this.quizService.getQuizById(quiz_id, auth_id);
     return this.fromQuizToQuizReturnDto(quiz);
@@ -112,7 +116,7 @@ export class QuizController {
     if (!isUUID(quiz_id)) {
       throw new BadRequestException('Invalid quiz_id');
     }
-
+//    const auth_id = '7070afde-f8b5-487e-a288-f2be9d162b0b';
     const { auth_id } = request.user;
 
     const quiz = await this.quizService.cloneQuizById(quiz_id, auth_id);
@@ -125,7 +129,7 @@ export class QuizController {
     if (!isUUID(quiz_id)) {
       throw new BadRequestException('Invalid quiz_id');
     }
-
+    //const auth_id = '7070afde-f8b5-487e-a288-f2be9d162b0b';
     const { auth_id } = request.user;
 
     const quiz = await this.quizService.getQuizById(quiz_id, auth_id);
@@ -150,13 +154,14 @@ export class QuizController {
   async generateQuizByGemini(
     @Query('theme') theme: string,
     @Query('num') num_quiz: number,
-    //@Req() request,
+    @Req() request,
   ) {
     console.log(theme);
 
-    //const auth_id = request.user.auth_id;
+    const auth_id = request.user.auth_id;
+    // const auth_id = '7070afde-f8b5-487e-a288-f2be9d162b0b';
     const quiz = await this.quizService.generateQuizByGemini(
-      'hta',
+      auth_id,
       theme,
       num_quiz,
     );

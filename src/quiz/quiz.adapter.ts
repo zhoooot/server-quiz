@@ -44,8 +44,13 @@ export class QuizAdapter {
 
         quiz.quiz_id = uuidv4(); // Assuming quiz_id is generated using uuid
         quiz.auth_id = this.quizFromGemini.auth_id;
+    
         quiz.created_at = new Date();
         quiz.published = version;
+        quiz.published.title = this.quizFromGemini.title;
+        quiz.published.description = this.quizFromGemini.description;
+        quiz.published.version_id=version.version_id;
+        
         for (let question of this.quizFromGemini.questions) {
             const newQuestion = new Question();
             newQuestion.version = version;
