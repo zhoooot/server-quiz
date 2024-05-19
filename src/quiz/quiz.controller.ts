@@ -41,11 +41,13 @@ export class QuizController {
       num_questions: published.questions.length,
       title: published.title,
       description: published.description,
+      image: published.image,
       questions: published.questions
         .map((question) => ({
           index: question.index,
           question: question.question,
           time_limit: question.time,
+          image: question.image,
           answers: question.answers
             .map((answer) => ({
               index: answer.index,

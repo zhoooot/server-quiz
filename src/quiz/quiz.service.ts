@@ -111,6 +111,7 @@ export class QuizService {
     new_quiz.published.title = new_quiz.published.title + ' (Clone)';
     new_quiz.published.description =
       new_quiz.published.description + ' (Clone)';
+    new_quiz.published.image=new_quiz.published.image;
 
     new_quiz.published.questions.forEach((question) => {
       question.question_id = undefined;
@@ -189,6 +190,7 @@ If the question is a true/false question, the 'answers' should only have two ele
     quiz.published.title=dto.title;
     quiz.published.description=dto.description;
     quiz.published.version_id=version.version_id;
+    quiz.published.image=dto.image;
     version.quiz=quiz;
     for (let question of dto.questions) {
       const newQuestion = new Question();
@@ -197,6 +199,7 @@ If the question is a true/false question, the 'answers' should only have two ele
       newQuestion.question = question.question;
       newQuestion.time = question.time_limit;
       newQuestion.index = question.index;
+      newQuestion.image = question.image;
       for (let answer of question.answers) {
         const newAnswer = new Answer();
         newAnswer.question = newQuestion;

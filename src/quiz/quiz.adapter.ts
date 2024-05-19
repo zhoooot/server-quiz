@@ -59,6 +59,7 @@ export class QuizAdapter {
         quiz.published.title = this.quizFromGemini.title;
         quiz.published.description = this.quizFromGemini.description;
         quiz.published.version_id=version.version_id;
+        quiz.published.image = undefined;
     
 
         for (let question of this.quizFromGemini.questions) {
@@ -68,6 +69,7 @@ export class QuizAdapter {
             newQuestion.index = parseInt(question.index);
             newQuestion.question = question.question;
             newQuestion.time = parseInt(question.time_limit) ?? 60;
+            newQuestion.image = undefined;
             newQuestion.answers = new Collection<Answer>(newQuestion);
             for (let newAnswer of question.answers) {
                 const answer = new Answer();

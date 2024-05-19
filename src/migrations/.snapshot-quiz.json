@@ -120,6 +120,15 @@
           "primary": false,
           "nullable": true,
           "mappedType": "text"
+        },
+        "image": {
+          "name": "image",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "string"
         }
       },
       "name": "version",
@@ -189,6 +198,15 @@
           "primary": false,
           "nullable": false,
           "mappedType": "text"
+        },
+        "image": {
+          "name": "image",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "string"
         },
         "time": {
           "name": "time",
