@@ -5,9 +5,9 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 export { QuizFromGemini } from './quiz.adapter';
 import { QuizAdapter } from './quiz.adapter';
 import { QuizDto } from 'src/draft/dtos/quiz.dto';
-import {Version} from 'src/entities/version.entity';
-import {Question} from 'src/entities/question.entity';
-import {Answer} from 'src/entities/answer.entity';
+import { Version } from 'src/entities/version.entity';
+import { Question } from 'src/entities/question.entity';
+import { Answer } from 'src/entities/answer.entity';
 import { v4 as uuidv4 } from 'uuid';
 const genAI = new GoogleGenerativeAI('AIzaSyDHkLRg2W5hCNKDxZbjeNIfh7aCNFxus_I');
 
@@ -90,7 +90,7 @@ export class QuizService {
   async cloneQuizById(quiz_id: string, new_auth_id: string) {
     const quiz = await this.em.findOne(
       Quiz,
-      { quiz_id, $not: { published: null }},
+      { quiz_id, $not: { published: null } },
       {
         populate: true,
       },
@@ -120,7 +120,6 @@ export class QuizService {
         answer.question = undefined;
       });
     });
-
 
     const entity = this.em.create(Quiz, new_quiz);
     await this.em.persistAndFlush(entity);
@@ -155,30 +154,35 @@ The 'index' should be in form of (0, 1, 2, 3).
 The 'question_type' should be 0 or 1, 0 has four answers, 1 has two answers (true/false question).
 If the question is a true/false question, the 'answers' should only have two elements, else the 'answers' should have four elements.
     `;
-    const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
-  // console.log(response.text());
-    const text= response.text().replace(/```json\s+/, '').replace(/\s+```/, '').replace(/```JSON\s+/, '').replace(/\s+```/, '').replace(/```\s+/, '');
+    // console.log(response.text());
+    const text = response
+      .text()
+      .replace(/```json\s+/, '')
+      .replace(/\s+```/, '')
+      .replace(/```JSON\s+/, '')
+      .replace(/\s+```/, '')
+      .replace(/```\s+/, '');
 
     const quiz = await new QuizAdapter(text);
-    const entity=quiz.adaptToQuizEntity();
+    const entity = quiz.adaptToQuizEntity();
 
-    console.log('entity created');   
-    const quizEntity = this.em.create(Quiz, entity);
-    await this.em.persistAndFlush(quizEntity);
+    // console.log('entity created');
+    // const quizEntity = this.em.create(Quiz, entity);
+    // await this.em.persistAndFlush(quizEntity);
 
-    console.log('entity completed');
-    
+    // console.log('entity completed');
+
     return entity;
   }
   async createQuiz(auth_id: string, dto: QuizDto) {
     const quiz = new Quiz();
-    if (dto.quiz_id !== undefined)
-      {
-        quiz.quiz_id = dto.quiz_id;
-      }
+    if (dto.quiz_id !== undefined) {
+      quiz.quiz_id = dto.quiz_id;
+    }
     quiz.auth_id = auth_id;
     quiz.created_at = new Date();
     const version=new Version();
@@ -210,15 +214,13 @@ If the question is a true/false question, the 'answers' should only have two ele
       }
       version.questions.add(newQuestion);
     }
-    quiz.published.questions=version.questions;
+    quiz.published.questions = version.questions;
     const entity = this.em.create(Quiz, quiz);
     await this.em.persistAndFlush(entity);
     return entity;
-    
   }
-  
-  async updateQuiz(dto: QuizDto)
-  {
+
+  async updateQuiz(dto: QuizDto) {
     const quiz = await this.em.findOneOrFail(Quiz, { quiz_id: dto.quiz_id });
     if (quiz === null) {
       throw new NotFoundException();
@@ -234,8 +236,8 @@ If the question is a true/false question, the 'answers' should only have two ele
     quiz.published = version;
     quiz.published.title = dto.title;
     quiz.published.description = dto.description;
-    quiz.published.version_id=version.version_id;
-    
+    quiz.published.version_id = version.version_id;
+
     for (let question of dto.questions) {
       const newQuestion = new Question();
       newQuestion.version = version;
@@ -253,12 +255,8 @@ If the question is a true/false question, the 'answers' should only have two ele
       }
       version.questions.add(newQuestion);
     }
-    quiz.published.questions=version.questions;
+    quiz.published.questions = version.questions;
     await this.em.persistAndFlush(quiz);
     return quiz;
-
-  }  
-
-
-  
+  }
 }
