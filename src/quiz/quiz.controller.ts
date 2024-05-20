@@ -82,10 +82,6 @@ export class QuizController {
     const { auth_id } = request.user;
     //const auth_id = '7070afde-f8b5-487e-a288-f2be9d162b0b';
 
-    if (!isUUID(auth_id)) {
-      throw new BadRequestException('Invalid auth_id');
-    }
-
     const quizList = await this.quizService.getQuizOfUser(auth_id, page, limit);
 
     return quizList.map((quiz) => this.fromQuizToQuizReturnDto(quiz));
@@ -180,6 +176,9 @@ export class QuizController {
   @Post('/create')
   async createQuiz(@Body() dto: QuizDto, @Req() request) {
     const { auth_id } = request.user;
+    if (!isUUID(auth_id)) {
+      throw new BadRequestException('Invalid auth_id');
+    }
     //const auth_id = '7070afde-f8b5-487e-a288-f2be9d162b0b';
     const quiz = await this.quizService.createQuiz(auth_id, dto);
    return this.fromQuizToQuizReturnDto(quiz);
